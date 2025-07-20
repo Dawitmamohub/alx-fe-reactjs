@@ -1,4 +1,4 @@
-// src/components/Contact.jsx
+
 import { useState } from 'react';
 
 function Contact() {
