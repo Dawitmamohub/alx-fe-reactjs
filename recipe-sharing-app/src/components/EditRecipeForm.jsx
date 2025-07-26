@@ -14,19 +14,12 @@ const EditRecipeForm = ({ recipe }) => {
   return (
     <form onSubmit={handleSubmit}>
       <h3>Edit Recipe</h3>
-      <input
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        placeholder="Title"
-        required
-      />
+      <input value={title} onChange={(e) => setTitle(e.target.value)} />
       <textarea
         value={description}
         onChange={(e) => setDescription(e.target.value)}
-        placeholder="Description"
-        required
       />
-      <button type="submit">Save Changes</button>
+      <button type="submit">Update</button>
     </form>
   );
 };
