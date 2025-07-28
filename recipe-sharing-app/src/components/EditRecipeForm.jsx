@@ -13,8 +13,8 @@ const EditRecipeForm = ({ recipe }) => {
     setDescription(recipe.description);
     setEditing(false);
   };
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleSubmit = (event) => {
+    event.preventDefault();
     updateRecipe({ ...recipe, title, description });
     setEditing(false);
   };
