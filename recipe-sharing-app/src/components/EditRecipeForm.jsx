@@ -2,24 +2,42 @@ import { useState } from 'react';
 import { useRecipeStore } from './recipeStore';
 
 const EditRecipeForm = ({ recipe }) => {
-  const updateRecipe = useRecipeStore((state) => state.updateRecipe);
+  const updateRecipe = useRecipeStore(state => state.updateRecipe);
   const [title, setTitle] = useState(recipe.title);
   const [description, setDescription] = useState(recipe.description);
+  const [editing, setEditing] = useState(false);
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    updateRecipe({ id: recipe.id, title, description });
+  const handleEdit = () => setEditing(true);
+  const handleCancel = () => {
+    setTitle(recipe.title);
+    setDescription(recipe.description);
+    setEditing(false);
   };
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    updateRecipe({ ...recipe, title, description });
+    setEditing(false);
+  };
+
+  if (!editing) {
+    return <button onClick={handleEdit}>Edit</button>;
+  }
 
   return (
     <form onSubmit={handleSubmit}>
-      <h3>Edit Recipe</h3>
-      <input value={title} onChange={(e) => setTitle(e.target.value)} />
+      <input
+        type="text"
+        value={title}
+        onChange={e => setTitle(e.target.value)}
+        placeholder="Title"
+      />
       <textarea
         value={description}
-        onChange={(e) => setDescription(e.target.value)}
+        onChange={e => setDescription(e.target.value)}
+        placeholder="Description"
       />
-      <button type="submit">Update</button>
+      <button type="submit">Save</button>
+      <button type="button" onClick={handleCancel}>Cancel</button>
     </form>
   );
 };
