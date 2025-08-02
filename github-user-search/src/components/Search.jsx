@@ -1,56 +1,67 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
+import { fetchUserData } from '../services/githubService';
 
-const Search = ({ onSearch, loading, error, user }) => {
+const Search = () => {
   const [username, setUsername] = useState('');
+  const [userData, setUserData] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
 
-  const handleSubmit = e => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (username.trim()) {
-      onSearch(username.trim());
-      setUsername('');
+    setLoading(true);
+    setError(false);
+    setUserData(null);
+
+    try {
+      const data = await fetchUserData(username);
+      setUserData(data);
+    } catch (err) {
+      setError(true);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="max-w-md mx-auto p-4">
-      <form onSubmit={handleSubmit} className="space-y-3">
+    <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-xl shadow-md">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <input
           type="text"
           placeholder="Enter GitHub username"
           value={username}
-          onChange={e => setUsername(e.target.value)}
-          className="w-full border rounded px-3 py-2"
+          onChange={(e) => setUsername(e.target.value)}
+          className="border border-gray-300 px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
         <button
           type="submit"
-          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
-          disabled={loading}
+          className="bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition"
         >
           Search
         </button>
       </form>
 
-      {loading && <p className="mt-4 text-center">Loading...</p>}
+      {loading && <p className="text-center mt-4">Loading...</p>}
 
-      {error && <p className="mt-4 text-center text-red-600">{error}</p>}
+      {error && (
+        <p className="text-red-500 text-center mt-4">
+          Looks like we can't find the user
+        </p>
+      )}
 
-      {user && (
-        <div className="mt-6 bg-white rounded shadow p-4 text-center">
+      {userData && (
+        <div className="mt-6 p-4 border rounded-md text-center">
           <img
-            src={user.avatar_url}
-            alt={user.login}
-            className="w-32 h-32 rounded-full mx-auto"
+            src={userData.avatar_url}
+            alt={userData.login}
+            className="w-24 h-24 rounded-full mx-auto mb-4"
           />
-          <h2 className="text-2xl font-semibold mt-4">{user.name || user.login}</h2>
-          {user.bio && <p className="mt-2">{user.bio}</p>}
-          <a
-            href={user.html_url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-blue-600 hover:underline mt-2 inline-block"
-          >
-            View GitHub Profile
-          </a>
+          <h2 className="text-xl font-semibold">{userData.name || userData.login}</h2>
+          <p className="text-blue-600">
+            <a href={userData.html_url} target="_blank" rel="noopener noreferrer">
+              View Profile
+            </a>
+          </p>
         </div>
       )}
     </div>
