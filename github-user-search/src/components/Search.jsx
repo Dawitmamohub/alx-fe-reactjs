@@ -1,12 +1,13 @@
-import { useState } from 'react';
-import { fetchUserData, advancedUserSearch } from '../services/githubService';
+// src/components/Search.jsx
+import React, { useState } from 'react';
+import { fetchUserData, fetchUsersByAdvancedSearch } from '../services/githubService';
 
 const Search = () => {
   const [username, setUsername] = useState('');
   const [location, setLocation] = useState('');
   const [minRepos, setMinRepos] = useState('');
-  const [results, setResults] = useState([]);
-  const [singleUser, setSingleUser] = useState(null);
+  const [user, setUser] = useState(null);
+  const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -14,14 +15,13 @@ const Search = () => {
     e.preventDefault();
     setLoading(true);
     setError('');
-    setSingleUser(null);
-    setResults([]);
-
+    setUser(null);
+    setUsers([]);
     try {
       const user = await fetchUserData(username);
-      setSingleUser(user);
+      setUser(user);
     } catch (err) {
-      setError("Looks like we can't find the user");
+      setError("Looks like we cant find the user"); // fixed message
     } finally {
       setLoading(false);
     }
@@ -31,106 +31,104 @@ const Search = () => {
     e.preventDefault();
     setLoading(true);
     setError('');
-    setSingleUser(null);
-    setResults([]);
-
+    setUser(null);
+    setUsers([]);
     try {
-      const data = await advancedUserSearch(username, location, minRepos);
-      setResults(data.items || []);
+      const results = await fetchUsersByAdvancedSearch(username, location, minRepos);
+      setUsers(results);
     } catch (err) {
-      setError('Error fetching users');
+      setError('Error fetching advanced results');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="p-4 max-w-xl mx-auto">
-      <h2 className="text-xl font-semibold mb-4">GitHub User Search</h2>
+    <div className="max-w-xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
+      <h1 className="text-2xl font-bold mb-4 text-center">GitHub User Search</h1>
 
-      <form onSubmit={handleBasicSearch} className="mb-6">
+      {/* Basic Search */}
+      <form onSubmit={handleBasicSearch} className="mb-4">
         <input
           type="text"
-          placeholder="Enter GitHub username"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
-          className="border p-2 w-full mb-2"
+          placeholder="Search by username"
+          className="w-full p-2 border border-gray-300 rounded mb-2"
         />
         <button
           type="submit"
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full"
+          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
         >
-          Basic Search
+          Search
         </button>
       </form>
 
-      <form onSubmit={handleAdvancedSearch}>
-        <input
-          type="text"
-          placeholder="Username (optional)"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          className="border p-2 w-full mb-2"
-        />
-        <input
-          type="text"
-          placeholder="Location"
-          value={location}
-          onChange={(e) => setLocation(e.target.value)}
-          className="border p-2 w-full mb-2"
-        />
-        <input
-          type="number"
-          placeholder="Minimum Repositories"
-          value={minRepos}
-          onChange={(e) => setMinRepos(e.target.value)}
-          className="border p-2 w-full mb-2"
-        />
+      {/* Advanced Search */}
+      <form onSubmit={handleAdvancedSearch} className="mb-4">
+        <div className="grid grid-cols-1 gap-2">
+          <input
+            type="text"
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+            placeholder="Location (e.g. Ethiopia)"
+            className="p-2 border border-gray-300 rounded"
+          />
+          <input
+            type="number"
+            value={minRepos}
+            onChange={(e) => setMinRepos(e.target.value)}
+            placeholder="Minimum Repositories"
+            className="p-2 border border-gray-300 rounded"
+          />
+        </div>
         <button
           type="submit"
-          className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 w-full"
+          className="mt-2 w-full bg-green-600 text-white py-2 rounded hover:bg-green-700"
         >
           Advanced Search
         </button>
       </form>
 
-      {loading && <p className="text-gray-700 mt-4">Loading...</p>}
-      {error && <p className="text-red-600 mt-4">{error}</p>}
+      {/* Results */}
+      {loading && <p className="text-center text-gray-600">Loading...</p>}
+      {error && <p className="text-center text-red-500">{error}</p>}
 
-      {singleUser && (
-        <div className="mt-4 border p-4 rounded shadow">
-          <img src={singleUser.avatar_url} alt={singleUser.login} className="w-16 h-16 rounded-full mb-2" />
-          <h3 className="text-lg font-bold">{singleUser.name || singleUser.login}</h3>
-          <p>
-            <a
-              href={singleUser.html_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-600"
-            >
-              View Profile
-            </a>
-          </p>
+      {user && (
+        <div className="mt-4 p-4 border border-gray-200 rounded text-center">
+          <img src={user.avatar_url} alt={user.login} className="w-24 h-24 mx-auto rounded-full" />
+          <h2 className="mt-2 text-xl font-semibold">{user.name || user.login}</h2>
+          <p className="text-gray-600">{user.location}</p>
+          <a
+            href={user.html_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-600 hover:underline"
+          >
+            View Profile
+          </a>
         </div>
       )}
 
-      {results.length > 0 && (
+      {users.length > 0 && (
         <div className="mt-6">
-          <h3 className="text-lg font-semibold mb-2">Advanced Search Results:</h3>
+          <h3 className="text-lg font-semibold mb-2">Advanced Search Results</h3>
           <ul className="space-y-4">
-            {results.map((user) => (
-              <li key={user.id} className="flex items-center space-x-4 border p-3 rounded">
-                <img src={user.avatar_url} alt={user.login} className="w-12 h-12 rounded-full" />
-                <div>
-                  <p className="font-medium">{user.login}</p>
-                  <a
-                    href={user.html_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-600"
-                  >
-                    View Profile
-                  </a>
+            {users.map((user) => (
+              <li key={user.id} className="p-4 border border-gray-200 rounded">
+                <div className="flex items-center space-x-4">
+                  <img src={user.avatar_url} alt={user.login} className="w-16 h-16 rounded-full" />
+                  <div>
+                    <h4 className="text-md font-bold">{user.login}</h4>
+                    <a
+                      href={user.html_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:underline"
+                    >
+                      View Profile
+                    </a>
+                  </div>
                 </div>
               </li>
             ))}
