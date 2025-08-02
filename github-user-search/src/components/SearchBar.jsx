@@ -1,27 +1,36 @@
 import React, { useState } from 'react';
 
-const SearchBar = ({ onSearch }) => {
+const Search = ({ onSearch }) => {
   const [username, setUsername] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = e => {
     e.preventDefault();
     if (username.trim()) {
-      onSearch(username);
+      onSearch(username.trim());
       setUsername('');
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} style={{ marginBottom: '1rem' }}>
+    <form
+      onSubmit={handleSubmit}
+      className="max-w-md mx-auto p-4"
+    >
       <input
         type="text"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
         placeholder="Enter GitHub username"
+        value={username}
+        onChange={e => setUsername(e.target.value)}
+        className="border p-2 rounded w-full"
       />
-      <button type="submit">Search</button>
+      <button
+        type="submit"
+        className="mt-2 bg-blue-600 text-white py-2 rounded w-full hover:bg-blue-700 transition"
+      >
+        Search
+      </button>
     </form>
   );
 };
 
-export default SearchBar;
+export default Search;
