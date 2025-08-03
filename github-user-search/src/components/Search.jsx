@@ -1,115 +1,90 @@
-import React, { useState } from 'react';
-import { advancedUserSearch } from '../services/githubService';
+import { useState } from 'react'
+import { fetchUserData } from '../services/githubService'
 
 const Search = () => {
-  const [username, setUsername] = useState('');
-  const [location, setLocation] = useState('');
-  const [minRepos, setMinRepos] = useState('');
-  const [results, setResults] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [page, setPage] = useState(1);
-  const [totalCount, setTotalCount] = useState(0);
+  const [username, setUsername] = useState('')
+  const [location, setLocation] = useState('')
+  const [minRepos, setMinRepos] = useState('')
+  const [results, setResults] = useState([])
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
 
-  const handleSearch = async (pageNumber = 1) => {
-    setLoading(true);
-    setError('');
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    setLoading(true)
+    setError('')
+    setResults([])
+
     try {
-      const data = await advancedUserSearch(username, location, minRepos, pageNumber);
-      if (pageNumber === 1) {
-        setResults(data.items || []);
+      const users = await fetchUserData(username, location, minRepos)
+      if (users.length === 0) {
+        setError('Looks like we cant find the user')
       } else {
-        setResults(prev => [...prev, ...(data.items || [])]);
+        setResults(users)
       }
-      setTotalCount(data.total_count || 0);
-      setPage(pageNumber);
     } catch (err) {
-      setError('Looks like we cant find the user(s)');
+      setError('Looks like we cant find the user')
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    handleSearch(1);
-  };
-
-  const loadMore = () => {
-    handleSearch(page + 1);
-  };
+  }
 
   return (
-    <div className="max-w-3xl mx-auto mt-10 p-6 bg-white shadow rounded">
-      <h1 className="text-2xl font-bold mb-6 text-center">GitHub User Search</h1>
-      <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+    <div className="max-w-xl mx-auto bg-white p-6 rounded shadow">
+      <form onSubmit={handleSubmit} className="space-y-4">
         <input
           type="text"
+          placeholder="GitHub Username"
           value={username}
-          onChange={e => setUsername(e.target.value)}
-          placeholder="Username"
-          className="border p-2 rounded"
+          onChange={(e) => setUsername(e.target.value)}
+          className="w-full p-2 border border-gray-300 rounded"
         />
         <input
           type="text"
-          value={location}
-          onChange={e => setLocation(e.target.value)}
           placeholder="Location"
-          className="border p-2 rounded"
+          value={location}
+          onChange={(e) => setLocation(e.target.value)}
+          className="w-full p-2 border border-gray-300 rounded"
         />
         <input
           type="number"
-          min="0"
+          placeholder="Minimum Repositories"
           value={minRepos}
-          onChange={e => setMinRepos(e.target.value)}
-          placeholder="Min Repos"
-          className="border p-2 rounded"
+          onChange={(e) => setMinRepos(e.target.value)}
+          className="w-full p-2 border border-gray-300 rounded"
         />
         <button
           type="submit"
-          className="col-span-1 sm:col-span-3 bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+          className="w-full bg-blue-500 text-white font-semibold py-2 rounded hover:bg-blue-600"
         >
           Search
         </button>
       </form>
 
-      {loading && <p className="text-center text-gray-600">Loading...</p>}
-      {error && <p className="text-center text-red-600">{error}</p>}
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-        {results.map(user => (
-          <div key={user.id} className="border rounded p-4 shadow text-center">
-            <img
-              src={user.avatar_url}
-              alt={user.login}
-              className="w-20 h-20 rounded-full mx-auto mb-2"
-            />
-            <h2 className="text-lg font-semibold">{user.login}</h2>
-            <a
-              href={user.html_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-600 hover:underline"
-            >
-              View Profile
-            </a>
-          </div>
-        ))}
-      </div>
-
-      {results.length > 0 && results.length < totalCount && (
-        <div className="text-center mt-6">
-          <button
-            onClick={loadMore}
-            disabled={loading}
-            className="bg-green-600 text-white py-2 px-6 rounded hover:bg-green-700 disabled:opacity-50"
-          >
-            {loading ? 'Loading...' : 'Load More'}
-          </button>
+      <div className="mt-6">
+        {loading && <p className="text-center">Loading...</p>}
+        {error && <p className="text-center text-red-500">{error}</p>}
+        <div className="grid gap-4">
+          {results.map((user) => (
+            <div key={user.id} className="border p-4 rounded flex items-center space-x-4">
+              <img src={user.avatar_url} alt={user.login} className="w-16 h-16 rounded-full" />
+              <div>
+                <h2 className="font-bold">{user.login}</h2>
+                <a
+                  href={user.html_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-500 underline"
+                >
+                  View Profile
+                </a>
+              </div>
+            </div>
+          ))}
         </div>
-      )}
+      </div>
     </div>
-  );
-};
+  )
+}
 
-export default Search;
+export default Search
