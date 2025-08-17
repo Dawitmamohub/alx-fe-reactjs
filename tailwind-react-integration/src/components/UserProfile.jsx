@@ -15,8 +15,8 @@ function UserProfile() {
         src="https://via.placeholder.com/150"
         alt="User"
         className="
-          rounded-full
           w-24 h-24 md:w-36 md:h-36
+          rounded-full
           mx-auto
           transition-transform duration-300 ease-in-out
           hover:scale-110

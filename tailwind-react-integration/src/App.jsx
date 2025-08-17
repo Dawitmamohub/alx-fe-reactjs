@@ -1,8 +1,8 @@
-import UserProfile from "./components/userprofile.jsx";
+import UserProfile from './components/UserProfile';
 
 function App() {
   return (
-    <div>
+    <div className="min-h-screen flex items-center justify-center">
       <UserProfile />
     </div>
   );
