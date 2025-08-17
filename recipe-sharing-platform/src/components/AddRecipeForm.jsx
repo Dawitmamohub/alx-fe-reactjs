@@ -27,7 +27,7 @@ function AddRecipeForm({ onAddRecipe }) {
       title: title.trim(),
       ingredients: ingredients.split(',').map(item => item.trim()),
       steps: steps.split('.').map(item => item.trim()).filter(Boolean),
-      summary: steps.split('.')[0], // optional short summary
+      summary: steps.split('.')[0],
       image: 'https://via.placeholder.com/150'
     };
 
@@ -43,11 +43,11 @@ function AddRecipeForm({ onAddRecipe }) {
   };
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-6 text-center">Add New Recipe</h1>
+    <div className="container mx-auto p-4 sm:p-6 md:p-8">
+      <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-6 text-center">Add New Recipe</h1>
       <form
         onSubmit={handleSubmit}
-        className="max-w-lg mx-auto bg-white p-6 rounded-lg shadow-lg space-y-4"
+        className="max-w-full sm:max-w-md md:max-w-lg mx-auto bg-white p-4 sm:p-6 md:p-8 rounded-lg shadow-lg space-y-4"
       >
         {/* Title */}
         <div>
@@ -56,7 +56,7 @@ function AddRecipeForm({ onAddRecipe }) {
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+            className={`w-full border rounded px-3 py-2 sm:py-3 md:py-4 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
               errors.title ? 'border-red-500' : 'border-gray-300'
             }`}
           />
@@ -69,7 +69,7 @@ function AddRecipeForm({ onAddRecipe }) {
           <textarea
             value={ingredients}
             onChange={(e) => setIngredients(e.target.value)}
-            className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+            className={`w-full border rounded px-3 py-2 sm:py-3 md:py-4 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
               errors.ingredients ? 'border-red-500' : 'border-gray-300'
             }`}
             rows={3}
@@ -83,7 +83,7 @@ function AddRecipeForm({ onAddRecipe }) {
           <textarea
             value={steps}
             onChange={(e) => setSteps(e.target.value)}
-            className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+            className={`w-full border rounded px-3 py-2 sm:py-3 md:py-4 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
               errors.steps ? 'border-red-500' : 'border-gray-300'
             }`}
             rows={5}
@@ -94,7 +94,7 @@ function AddRecipeForm({ onAddRecipe }) {
         {/* Submit Button */}
         <button
           type="submit"
-          className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-500 transition-colors duration-300"
+          className="w-full bg-blue-600 text-white py-2 sm:py-3 md:py-4 px-4 sm:px-6 md:px-8 rounded-lg hover:bg-blue-500 transition-colors duration-300 text-sm sm:text-base md:text-lg"
         >
           Add Recipe
         </button>
@@ -104,3 +104,4 @@ function AddRecipeForm({ onAddRecipe }) {
 }
 
 export default AddRecipeForm;
+
