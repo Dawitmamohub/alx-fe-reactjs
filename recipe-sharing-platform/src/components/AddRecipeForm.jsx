@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 function AddRecipeForm({ onAddRecipe }) {
   const [title, setTitle] = useState('');
   const [ingredients, setIngredients] = useState('');
-  const [instructions, setInstructions] = useState('');
+  const [steps, setSteps] = useState('');
   const [errors, setErrors] = useState({});
   const navigate = useNavigate();
 
@@ -13,7 +13,7 @@ function AddRecipeForm({ onAddRecipe }) {
     if (!title.trim()) newErrors.title = 'Title is required';
     if (!ingredients.trim() || ingredients.split(',').length < 2)
       newErrors.ingredients = 'Please provide at least 2 ingredients, separated by commas';
-    if (!instructions.trim()) newErrors.instructions = 'Instructions are required';
+    if (!steps.trim()) newErrors.steps = 'Steps are required';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -26,8 +26,8 @@ function AddRecipeForm({ onAddRecipe }) {
       id: Date.now(),
       title: title.trim(),
       ingredients: ingredients.split(',').map(item => item.trim()),
-      instructions: instructions.split('.').map(item => item.trim()).filter(Boolean),
-      summary: instructions.split('.')[0], // optional short summary
+      steps: steps.split('.').map(item => item.trim()).filter(Boolean),
+      summary: steps.split('.')[0], // optional short summary
       image: 'https://via.placeholder.com/150'
     };
 
@@ -36,7 +36,7 @@ function AddRecipeForm({ onAddRecipe }) {
     // Reset form
     setTitle('');
     setIngredients('');
-    setInstructions('');
+    setSteps('');
     setErrors({});
 
     navigate('/');
@@ -77,18 +77,18 @@ function AddRecipeForm({ onAddRecipe }) {
           {errors.ingredients && <p className="text-red-500 text-sm mt-1">{errors.ingredients}</p>}
         </div>
 
-        {/* Instructions */}
+        {/* Steps */}
         <div>
-          <label className="block font-semibold mb-1">Instructions (period separated)</label>
+          <label className="block font-semibold mb-1">Steps (period separated)</label>
           <textarea
-            value={instructions}
-            onChange={(e) => setInstructions(e.target.value)}
+            value={steps}
+            onChange={(e) => setSteps(e.target.value)}
             className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-              errors.instructions ? 'border-red-500' : 'border-gray-300'
+              errors.steps ? 'border-red-500' : 'border-gray-300'
             }`}
             rows={5}
           />
-          {errors.instructions && <p className="text-red-500 text-sm mt-1">{errors.instructions}</p>}
+          {errors.steps && <p className="text-red-500 text-sm mt-1">{errors.steps}</p>}
         </div>
 
         {/* Submit Button */}
