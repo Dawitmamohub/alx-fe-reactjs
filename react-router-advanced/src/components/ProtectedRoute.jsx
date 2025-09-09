@@ -1,7 +1,10 @@
 import React from "react";
 import { Navigate } from "react-router-dom";
 
-const isAuthenticated = true;
+import React from "react";
+import { Navigate } from "react-router-dom";
+
+const isAuthenticated = false; // Set to false to test redirect behavior
 
 function ProtectedRoute({ children }) {
   if (!isAuthenticated) {

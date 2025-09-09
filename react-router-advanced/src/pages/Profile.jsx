@@ -13,6 +13,7 @@ function Profile() {
       </nav>
 
       <Routes>
+        <Route index element={<ProfileDetails />} />
         <Route path="details" element={<ProfileDetails />} />
         <Route path="settings" element={<ProfileSettings />} />
       </Routes>
