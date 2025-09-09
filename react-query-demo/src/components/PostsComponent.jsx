@@ -1,49 +1,50 @@
-import React from "react";
-import { useQuery } from "@tanstack/react-query";
+import React from 'react';
+import { useQuery } from '@tanstack/react-query';
 
-// Function to fetch posts
 const fetchPosts = async () => {
-  const res = await fetch("https://jsonplaceholder.typicode.com/posts");
-  if (!res.ok) {
-    throw new Error("Network response was not ok");
+  const response = await fetch('https://jsonplaceholder.typicode.com/posts');
+  if (!response.ok) {
+    throw new Error('Failed to fetch posts');
   }
-  return res.json();
+  return response.json();
 };
 
-function PostsComponent() {
+const PostsComponent = () => {
   const {
     data: posts,
     isLoading,
     isError,
     error,
-    refetch,
     isFetching,
   } = useQuery({
-    queryKey: ["posts"],
+    queryKey: ['posts'],
     queryFn: fetchPosts,
-    staleTime: 5000, // data stays fresh for 5 seconds
-    cacheTime: 1000 * 60 * 5, // cache persists for 5 min
+    refetchOnWindowFocus: true,
+    keepPreviousData: true,
   });
 
-  if (isLoading) return <p>Loading posts...</p>;
-  if (isError) return <p style={{ color: "red" }}>Error: {error.message}</p>;
+  if (isLoading) {
+    return <div>Loading posts...</div>;
+  }
+
+  if (isError) {
+    return <div>Error: {error.message}</div>;
+  }
 
   return (
     <div>
-      <button onClick={() => refetch()} disabled={isFetching}>
-        {isFetching ? "Refreshing..." : "Refetch Posts"}
-      </button>
-
+      <h1>Posts</h1>
+      {isFetching && <div>Refetching...</div>}
       <ul>
-        {posts.slice(0, 10).map((post) => (
+        {posts?.map((post) => (
           <li key={post.id}>
-            <strong>{post.title}</strong>
+            <h2>{post.title}</h2>
             <p>{post.body}</p>
           </li>
         ))}
       </ul>
     </div>
   );
-}
+};
 
 export default PostsComponent;
