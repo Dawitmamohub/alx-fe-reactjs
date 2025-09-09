@@ -1,25 +1,44 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-import Profile from "./components/Profile.jsx";
-import ProfileDetails from "./components/ProfileDetails.jsx";
-import ProfileSettings from "./components/ProfileSettings.jsx";
-import Home from "./components/Home.jsx";
+import React from "react";
+import { Routes, Route, Link } from "react-router-dom";
+import Home from "./pages/Home";
+import About from "./pages/About";
+import BlogPost from "./pages/BlogPost";
+import Profile from "./pages/Profile";
+import NotFound from "./pages/NotFound";
+import ProtectedRoute from "./components/ProtectedRoute";
 
-const isAuthenticated = false; // Simulated auth
-
-function ProtectedRoute({ children }) {
-  return isAuthenticated ? children : <Navigate to="/" />;
-}
-
-export default function App() {
+function App() {
   return (
-    <Router>
+    <div>
+      <nav style={{ marginBottom: "20px" }}>
+        <Link to="/">Home</Link> |{" "}
+        <Link to="/about">About</Link> |{" "}
+        <Link to="/profile">Profile</Link> |{" "}
+        <Link to="/blog/1">Blog Post #1</Link>
+      </nav>
+
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>}>
-          <Route path="details" element={<ProfileDetails />} />
-          <Route path="settings" element={<ProfileSettings />} />
-        </Route>
+        <Route path="/about" element={<About />} />
+
+        {/* Dynamic route for blog posts */}
+        <Route path="/blog/:id" element={<BlogPost />} />
+
+        {/* Protected route for profile */}
+        <Route
+          path="/profile/*"
+          element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Fallback for unknown routes */}
+        <Route path="*" element={<NotFound />} />
       </Routes>
-    </Router>
+    </div>
   );
 }
+
+export default App;

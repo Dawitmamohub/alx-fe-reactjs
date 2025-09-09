@@ -6,7 +6,7 @@ function RegistrationForm() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [errors, setErrors] = useState("");
   const [loading, setLoading] = useState(false);
 
   // Handle input change
@@ -26,30 +26,30 @@ function RegistrationForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Improved validation
-    if (!username.trim()) {
-      setError("Username is required!");
+    // Basic validation
+    if (!username) {
+      setErrors("Username is required!");
       return;
     }
-    if (!email.trim()) {
-      setError("Email is required!");
+    if (!email) {
+      setErrors("Email is required!");
       return;
     }
-    if (!password.trim()) {
-      setError("Password is required!");
+    if (!password) {
+      setErrors("Password is required!");
       return;
     }
     if (password.length < 6) {
-      setError("Password must be at least 6 characters!");
+      setErrors("Password must be at least 6 characters!");
       return;
     }
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      setError("Please enter a valid email!");
+      setErrors("Please enter a valid email!");
       return;
     }
 
-    setError("");
+    setErrors("");
     setLoading(true);
 
     try {
@@ -61,7 +61,7 @@ function RegistrationForm() {
       setEmail("");
       setPassword("");
     } catch (err) {
-      setError(err.message);
+      setErrors(err.message);
     } finally {
       setLoading(false);
     }
@@ -71,7 +71,7 @@ function RegistrationForm() {
     <div>
       <h2>Registration Form (Controlled)</h2>
       <form onSubmit={handleSubmit}>
-        {error && <p style={{ color: "red" }}>{error}</p>}
+        {errors && <p style={{ color: "red" }}>{errors}</p>}
 
         <div>
           <label>Username: </label>
