@@ -1,37 +1,70 @@
 import React, { useState } from "react";
+import { registerUser } from "../api/mockApi";
 
 function RegistrationForm() {
   // State management
-  const [formData, setFormData] = useState({
-    username: "",
-    email: "",
-    password: ""
-  });
-
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   // Handle input change
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+  const handleUsernameChange = (e) => {
+    setUsername(e.target.value);
+  };
+
+  const handleEmailChange = (e) => {
+    setEmail(e.target.value);
+  };
+
+  const handlePasswordChange = (e) => {
+    setPassword(e.target.value);
   };
 
   // Handle form submission
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Simple validation
-    if (!formData.username || !formData.email || !formData.password) {
-      setError("All fields are required!");
+    // Improved validation
+    if (!username.trim()) {
+      setError("Username is required!");
+      return;
+    }
+    if (!email.trim()) {
+      setError("Email is required!");
+      return;
+    }
+    if (!password.trim()) {
+      setError("Password is required!");
+      return;
+    }
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters!");
+      return;
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setError("Please enter a valid email!");
       return;
     }
 
     setError("");
-    console.log("Submitting data:", formData);
+    setLoading(true);
 
-    // Simulate API request
-    setTimeout(() => {
-      alert(`User ${formData.username} registered successfully!`);
-    }, 500);
+    try {
+      const result = await registerUser({ username, email, password });
+      console.log("Registration successful:", result);
+      alert(`User ${username} registered successfully!`);
+      // Reset form
+      setUsername("");
+      setEmail("");
+      setPassword("");
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -45,8 +78,8 @@ function RegistrationForm() {
           <input
             type="text"
             name="username"
-            value={formData.username}
-            onChange={handleChange}
+            value={username}
+            onChange={handleUsernameChange}
           />
         </div>
 
@@ -55,8 +88,8 @@ function RegistrationForm() {
           <input
             type="email"
             name="email"
-            value={formData.email}
-            onChange={handleChange}
+            value={email}
+            onChange={handleEmailChange}
           />
         </div>
 
@@ -65,12 +98,14 @@ function RegistrationForm() {
           <input
             type="password"
             name="password"
-            value={formData.password}
-            onChange={handleChange}
+            value={password}
+            onChange={handlePasswordChange}
           />
         </div>
 
-        <button type="submit">Register</button>
+        <button type="submit" disabled={loading}>
+          {loading ? "Registering..." : "Register"}
+        </button>
       </form>
     </div>
   );
