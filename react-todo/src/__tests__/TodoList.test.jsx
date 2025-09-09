@@ -1,27 +1,44 @@
+import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
-import TodoList from "../components/TodoList.jsx";
+import "@testing-library/jest-dom";
+import TodoList from "../components/TodoList";
 
-test("renders initial todo", () => {
-  render(<TodoList />);
-  expect(screen.getByText("Sample Todo")).toBeInTheDocument();
-});
+describe("TodoList Component", () => {
+  test("renders initial todos", () => {
+    render(<TodoList />);
+    expect(screen.getByText("Learn React")).toBeInTheDocument();
+    expect(screen.getByText("Build Todo App")).toBeInTheDocument();
+  });
 
-test("can add a new todo", () => {
-  render(<TodoList />);
-  fireEvent.change(screen.getByPlaceholderText("New Todo"), { target: { value: "Test Todo" } });
-  fireEvent.click(screen.getByText("Add"));
-  expect(screen.getByText("Test Todo")).toBeInTheDocument();
-});
+  test("adds a new todo", () => {
+    render(<TodoList />);
+    const input = screen.getByPlaceholderText("Enter todo");
+    const button = screen.getByText("Add");
 
-test("can toggle a todo", () => {
-  render(<TodoList />);
-  const todo = screen.getByText("Sample Todo");
-  fireEvent.click(todo);
-  expect(todo).toHaveStyle("text-decoration: line-through");
-});
+    fireEvent.change(input, { target: { value: "New Task" } });
+    fireEvent.click(button);
 
-test("can delete a todo", () => {
-  render(<TodoList />);
-  fireEvent.click(screen.getByText("Delete"));
-  expect(screen.queryByText("Sample Todo")).not.toBeInTheDocument();
+    expect(screen.getByText("New Task")).toBeInTheDocument();
+  });
+
+  test("toggles a todo", () => {
+    render(<TodoList />);
+    const todo = screen.getByText("Learn React");
+
+    // Initially not completed
+    expect(todo).not.toHaveStyle("text-decoration: line-through");
+
+    // Toggle on click
+    fireEvent.click(todo);
+    expect(todo).toHaveStyle("text-decoration: line-through");
+  });
+
+  test("deletes a todo", () => {
+    render(<TodoList />);
+    const todo = screen.getByText("Learn React");
+    const deleteButton = screen.getAllByText("Delete")[0];
+
+    fireEvent.click(deleteButton);
+    expect(todo).not.toBeInTheDocument();
+  });
 });
