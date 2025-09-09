@@ -16,11 +16,14 @@ const PostsComponent = () => {
     isError,
     error,
     isFetching,
+    refetch,
   } = useQuery({
     queryKey: ['posts'],
     queryFn: fetchPosts,
     refetchOnWindowFocus: true,
     keepPreviousData: true,
+    gcTime: 1000 * 60 * 5, // 5 minutes
+    staleTime: 1000 * 60, // 1 minute
   });
 
   if (isLoading) {
@@ -34,6 +37,7 @@ const PostsComponent = () => {
   return (
     <div>
       <h1>Posts</h1>
+      <button onClick={() => refetch()}>Refetch Posts</button>
       {isFetching && <div>Refetching...</div>}
       <ul>
         {posts?.map((post) => (
